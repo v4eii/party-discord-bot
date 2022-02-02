@@ -10,7 +10,7 @@ class AudioTrackScheduler(
     private val player: AudioPlayer
 ) : AudioEventAdapter() {
 
-    val queue: MutableList<AudioTrack> = Collections.synchronizedList(LinkedList())
+    private val queue: MutableList<AudioTrack> = Collections.synchronizedList(LinkedList())
 
     @JvmOverloads
     fun play(track: AudioTrack, force: Boolean = false) =
@@ -22,7 +22,7 @@ class AudioTrackScheduler(
             }
         }
 
-    private fun nextForce(): Boolean = queue.isEmpty().not() && play(queue.removeAt(0), true)
+    fun nextForce(): Boolean = queue.isEmpty().not() && play(queue.removeAt(0), true)
 
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
         if (endReason.mayStartNext) nextForce()

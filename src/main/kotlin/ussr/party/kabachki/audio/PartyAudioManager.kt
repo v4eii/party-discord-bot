@@ -9,6 +9,7 @@ import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBu
 import discord4j.voice.AudioProvider
 
 class PartyAudioManager {
+
     private val playerManager: AudioPlayerManager = DefaultAudioPlayerManager().apply {
         configuration.frameBufferFactory = AudioFrameBufferFactory { i, audioDataFormat, atomicBoolean ->
             NonAllocatingAudioFrameBuffer(i, audioDataFormat, atomicBoolean)
@@ -25,4 +26,34 @@ class PartyAudioManager {
             playerManager.loadItem(it, handler).get()
         }
     }
+
+    fun resumeTrack(): Boolean {
+        return if (player.playingTrack == null) {
+            false
+        } else if (player.isPaused) {
+            revertPauseFlag()
+            true
+        } else {
+            true
+        }
+    }
+
+    fun stopTrack(): Boolean {
+        return if (player.playingTrack == null) {
+            false
+        } else if (player.isPaused.not()) {
+            revertPauseFlag()
+            true
+        } else {
+            true
+        }
+    }
+
+    private fun revertPauseFlag() {
+        player.isPaused = !player.isPaused
+    }
+
+    fun getCurrentPlayedTrack() = player.playingTrack.info.run { "${this.title} ${this.author} ${this.length}" }
+
+    fun skipCurrentTrack() = scheduler.nextForce()
 }
