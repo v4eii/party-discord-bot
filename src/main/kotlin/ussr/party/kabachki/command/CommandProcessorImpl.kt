@@ -25,13 +25,14 @@ class CommandProcessorImpl(
             "!skip" to audioExecutors.skipExecutor,
             "!pause" to audioExecutors.pauseExecutor,
             "!resume" to audioExecutors.resumeExecutor,
+            "!queue" to audioExecutors.showQueueExecutor,
             "!doSomething" to utilExecutors.doSomethingExecutor
         )
 
     override suspend fun parseCommand(event: MessageCreateEvent) = withContext(dispatcher) {
-        val content = event.getContent()
+        val content = event.getContent().trim()
         if (content.isCommand()) {
-            val splitCommand = content.split(" ")
+            val splitCommand = content.split(" ").map { it.trim() }
 
             commandExecutorsPairList.find { it.first == splitCommand[0] }
                 ?.second

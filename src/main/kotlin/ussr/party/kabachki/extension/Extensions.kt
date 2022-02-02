@@ -7,6 +7,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent
 import discord4j.core.spec.EmbedCreateFields
 import discord4j.core.spec.EmbedCreateSpec
 import discord4j.core.spec.VoiceChannelJoinSpec
+import discord4j.discordjson.possible.Possible
 import discord4j.voice.AudioProvider
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
@@ -22,6 +23,7 @@ import java.time.Instant
 fun MessageCreateEvent.getMemberOrNull(): Member? = member.orElse(null)
 fun MessageCreateEvent.getMemberOrThrow(): Member = getMemberOrNull() ?: throw MemberIsNotPresentException()
 fun MessageCreateEvent.getUsername() = getMemberOrNull()?.userData?.username() ?: "Cumrade"
+fun MessageCreateEvent.getMentionUsername() = getMemberOrNull()?.mention ?: "Cumrade"
 fun MessageCreateEvent.getContent() = message.content
 
 suspend fun MessageCreateEvent.getVoiceStateOrNull() = getMemberOrNull()?.getVoiceStateOrNull()
@@ -61,28 +63,31 @@ suspend fun MessageCreateEvent.sendSimpleMessageWithDelayedAction(
 suspend fun MessageCreateEvent.getMessageChannel(): MessageChannel = message.channel.awaitSingle()
 
 suspend fun MessageCreateEvent.sendComplexMessage(
-    author: EmbedCreateFields.Author,
+    author: EmbedCreateFields.Author? = null,
     imageUrl: String,
     title: String,
-    attachmentUrl: String,
+    attachmentTitleUrl: String? = null,
     description: String,
-    listAdditionalFields: Array<EmbedCreateFields.Field>,
-    footer: EmbedCreateFields.Footer
+    additionalFields: Array<EmbedCreateFields.Field> = arrayOf(),
+    footer: EmbedCreateFields.Footer? = null
 ) {
     getMessageChannel().createMessage(
         EmbedCreateSpec.builder()
             .author(author)
             .title(title)
-            .url(attachmentUrl)
+            .urlOrNone(attachmentTitleUrl)
             .description(description)
-            .image(imageUrl)
-            .addFields(*listAdditionalFields)
             .thumbnail(imageUrl)
+            .addFields(*additionalFields)
             .footer(footer)
             .timestamp(Instant.now())
             .build()
     ).awaitSingleOrNull()
 }
+
+fun EmbedCreateSpec.Builder.urlOrNone(url: String?) = url?.let {
+    url(url)
+} ?: this
 
 // Member
 
@@ -100,3 +105,5 @@ fun List<String>.checkValidUrl(): Boolean {
     }
     return false
 }
+
+fun <T> T.toPossible() = Possible.of(this!!)

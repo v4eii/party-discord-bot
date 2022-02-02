@@ -1,10 +1,14 @@
 package ussr.party.kabachki.command.executor
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import discord4j.core.event.domain.message.MessageCreateEvent
+import discord4j.core.spec.EmbedCreateFields
 import ussr.party.kabachki.audio.PartyAudioManager
 import ussr.party.kabachki.command.CommandExecutor
 import ussr.party.kabachki.extension.*
 
 class AudioExecutors {
+
     private val partyAudioManager = PartyAudioManager()
 
     val playExecutor = CommandExecutor { event, params ->
@@ -12,7 +16,7 @@ class AudioExecutors {
             event.getVoiceStateOrNull()?.let {
                 partyAudioManager.runTrackOrAddToQueue(params)
                 event.joinToMemberVoiceChannelWithProvider(partyAudioManager.provider)
-                event.sendSimpleMessage(partyAudioManager.getCurrentPlayedTrack())
+                event.sendComplexMessageWithPlayedTrack()
             } ?: event.sendSimpleMessage(
                 "Hey ${event.getUsername()}! You are not connected to the voice channel!"
             )
@@ -20,15 +24,18 @@ class AudioExecutors {
             event.sendSimpleMessage("Please use next syntax: !play <url> [<urls>]")
         }
     }
-    val skipExecutor = CommandExecutor { event, _ ->
-        partyAudioManager.skipCurrentTrack().also {
+
+    val skipExecutor = CommandExecutor { event, param ->
+        partyAudioManager.skipTrack((param[0].toIntOrNull() ?: 1) - 1).also {
             if (it) {
-                event.sendSimpleMessage("Fine, next track: ${partyAudioManager.getCurrentPlayedTrack()}") // change to complex msg
+                event.sendSimpleMessage("Fine, next track")
+                event.sendComplexMessageWithPlayedTrack()
             } else {
                 event.sendSimpleMessage("Track queue is empty! Add new track with !play")
             }
         }
     }
+
     val pauseExecutor = CommandExecutor { event, _ ->
         partyAudioManager.stopTrack().also {
             if (it) {
@@ -38,6 +45,7 @@ class AudioExecutors {
             }
         }
     }
+
     val resumeExecutor = CommandExecutor { event, _ ->
         partyAudioManager.resumeTrack().also {
             if (it) {
@@ -47,4 +55,33 @@ class AudioExecutors {
             }
         }
     }
+
+    val showQueueExecutor = CommandExecutor { event, _ ->
+        event.sendSimpleMessage(partyAudioManager.getTrackQueue().toIndexedStringList())
+    }
+
+    private suspend fun MessageCreateEvent.sendComplexMessageWithPlayedTrack() {
+        val currentTrackInfo = partyAudioManager.getCurrentPlayedTrackInfo()
+        val imageUrl =
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Simple_Music.svg/1024px-Simple_Music.svg.png"
+        sendComplexMessage(
+            imageUrl = imageUrl,
+            title = currentTrackInfo.title,
+            description = "Author: ${currentTrackInfo.author}",
+            attachmentTitleUrl = currentTrackInfo.uri,
+            additionalFields = arrayOf(
+                EmbedCreateFields.Field.of("length", currentTrackInfo.length.toHumanReadableLength(), true),
+                EmbedCreateFields.Field.of("requestedBy", this.getMentionUsername(), true),
+            )
+        )
+    }
+
+    private fun Long.toHumanReadableLength(): String = run {
+        listOf(this / 3600000, this / 60000 % 60, this / 1000 % 60)
+            .joinToString(":") { it.toString().padStart(2, '0') }
+            .dropWhile { it == '0' || it == ':' }
+    }
+
+    private fun List<AudioTrack>.toIndexedStringList() =
+        withIndex().joinToString("\n") { "${it.index + 1}. ${it.value.info.title}" }
 }
