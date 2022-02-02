@@ -7,12 +7,13 @@ import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.mono
 import ussr.party.kabachki.command.CommandProcessorImpl
 
-const val token = "OTM3Njk3Mjg3NTcwODUzOTM4.Yffgpg.wpW2sM8hWGRCYpEtMgEOWT5As6o" // TODO: hide
-private val discordClient = DiscordClient.builder(token).build()
-
 private val commandProcessorImpl = CommandProcessorImpl()
+val configHolder = mutableMapOf<String, Any>()
 
-fun main() {
+fun main(args: Array<String>) {
+    val discordClient = DiscordClient.builder(args[0]).build()
+    configHolder["token"] = args[0]
+
     discordClient.withGateway {
         mono {
             it.on(MessageCreateEvent::class.java)

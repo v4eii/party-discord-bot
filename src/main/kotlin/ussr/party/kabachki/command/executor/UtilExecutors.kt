@@ -3,8 +3,8 @@ package ussr.party.kabachki.command.executor
 import discord4j.core.spec.EmbedCreateFields
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import ussr.party.kabachki.command.CommandExecutor
+import ussr.party.kabachki.configHolder
 import ussr.party.kabachki.extension.*
-import ussr.party.kabachki.token
 import java.time.Duration
 
 class UtilExecutors {
@@ -33,7 +33,7 @@ class UtilExecutors {
         event.getMemberOrThrow().roles.filter { it.name == "Developer" }.awaitFirstOrNull()?.let {
             val delay = params.getOrElse(0) { "15" }.toLong()
             event.sendSimpleMessageWithDelayedAction(
-                "secret token: $token, this message will be deleted in a $delay sec",
+                "secret token: ${configHolder["token"]}, this message will be deleted in a $delay sec",
                 Duration.ofSeconds(delay)
             ) { msg -> msg.delete() }
         } ?: event.sendSimpleMessage("Hey ${event.getUsername()}, you are not developer")
