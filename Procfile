@@ -1,1 +1,1 @@
-web: java -jar /app/target/party-bot.jar
+worker: java -jar /app/target/party-bot.jar
