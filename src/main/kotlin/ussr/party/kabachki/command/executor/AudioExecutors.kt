@@ -3,6 +3,7 @@ package ussr.party.kabachki.command.executor
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import discord4j.core.event.domain.message.MessageCreateEvent
 import discord4j.core.spec.EmbedCreateFields
+import kotlinx.coroutines.delay
 import ussr.party.kabachki.audio.PartyAudioManager
 import ussr.party.kabachki.command.CommandExecutor
 import ussr.party.kabachki.extension.*
@@ -16,6 +17,7 @@ class AudioExecutors {
             event.getVoiceStateOrNull()?.let {
                 partyAudioManager.runTrackOrAddToQueue(params)
                 event.joinToMemberVoiceChannelWithProvider(partyAudioManager.provider)
+                delay(2000)
                 event.sendComplexMessageWithPlayedTrack()
             } ?: event.sendSimpleMessage(
                 "Hey ${event.getUsername()}! You are not connected to the voice channel!"

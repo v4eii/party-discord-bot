@@ -54,7 +54,12 @@ class PartyAudioManager {
         player.isPaused = !player.isPaused
     }
 
-    fun getCurrentPlayedTrackInfo(): AudioTrackInfo = player.playingTrack.info
+    fun getCurrentPlayedTrackInfo(): AudioTrackInfo {
+        println(player)
+        println(player.playingTrack)
+        println(player.playingTrack.info)
+        return player.playingTrack.info
+    }
     fun skipTrack(index: Int = 0) = scheduler.nextForce(index)
     fun getTrackQueue() = scheduler.queue
 }
