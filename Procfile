@@ -1,1 +1,1 @@
-java -jar /app/target/party-bot.jar
+web: java -jar /app/target/party-bot.jar
