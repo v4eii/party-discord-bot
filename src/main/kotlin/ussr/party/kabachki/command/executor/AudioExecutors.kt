@@ -15,7 +15,9 @@ class AudioExecutors {
     val playExecutor = CommandExecutor { event, params ->
         if (params.checkValidUrl()) {
             event.getVoiceStateOrNull()?.let {
+                println(1)
                 partyAudioManager.runTrackOrAddToQueue(params)
+                println(2)
                 event.joinToMemberVoiceChannelWithProvider(partyAudioManager.provider)
                 delay(2000)
                 event.sendComplexMessageWithPlayedTrack()
