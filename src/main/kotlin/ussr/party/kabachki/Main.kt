@@ -11,8 +11,9 @@ private val commandProcessorImpl = CommandProcessorImpl()
 val configHolder = mutableMapOf<String, Any>()
 
 fun main(args: Array<String>) {
-    val discordClient = DiscordClient.builder(args[0]).build()
-    configHolder["token"] = args[0]
+    val botToken = System.getenv("BOT_TOKEN") ?: args[0]
+    val discordClient = DiscordClient.builder(botToken).build()
+    configHolder["token"] = botToken
 
     discordClient.withGateway {
         mono {
