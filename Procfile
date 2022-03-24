@@ -1,1 +1,1 @@
-/bin/sh -c java\\\ -jar\\\ /app/target/party-bot.jar
+java -jar /app/target/party-bot.jar
