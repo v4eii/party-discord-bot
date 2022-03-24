@@ -19,14 +19,16 @@ class CommandProcessorImpl(
 
     private val commandExecutorsPairList: List<Pair<String, CommandExecutor<*>>> =
         listOf(
-            "!ping" to CommandExecutor { event, _ -> event.sendSimpleMessage("Pong!") },
             "!secret" to utilExecutors.secretExecutor,
             "!play" to audioExecutors.playExecutor,
             "!skip" to audioExecutors.skipExecutor,
             "!pause" to audioExecutors.pauseExecutor,
             "!resume" to audioExecutors.resumeExecutor,
             "!queue" to audioExecutors.showQueueExecutor,
-            "!doSomething" to utilExecutors.doSomethingExecutor
+            "!list" to audioExecutors.showQueueExecutor,
+            "!doSomething" to utilExecutors.doSomethingExecutor,
+            "!help" to utilExecutors.helpExecutor,
+            "!ping" to CommandExecutor { event, _ -> event.sendSimpleMessage("Pong!") },
         )
 
     override suspend fun parseCommand(event: MessageCreateEvent) = withContext(dispatcher) {
@@ -34,7 +36,7 @@ class CommandProcessorImpl(
         if (content.isCommand()) {
             val splitCommand = content.split(" ").map { it.trim() }
 
-            commandExecutorsPairList.find { it.first == splitCommand[0] }
+            commandExecutorsPairList.find { it.first == splitCommand.firstOrNull()?.lowercase() }
                 ?.second
                 ?.executeCommand(event, splitCommand.subList(1, splitCommand.size))
                 ?: event.sendSimpleMessage("Sorry ${event.getUsername()}, i don't known this command")

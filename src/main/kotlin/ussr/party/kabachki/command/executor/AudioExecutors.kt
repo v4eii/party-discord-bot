@@ -30,7 +30,7 @@ class AudioExecutors {
     }
 
     val skipExecutor = CommandExecutor { event, param ->
-        partyAudioManager.skipTrack((param[0].toIntOrNull() ?: 1) - 1).also {
+        partyAudioManager.skipTrack((param.firstOrNull()?.toIntOrNull() ?: 1) - 1).also {
             if (it) {
                 event.sendSimpleMessage("Fine, next track")
                 event.sendComplexMessageWithPlayedTrack()
