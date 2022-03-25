@@ -3,7 +3,6 @@ package ussr.party.kabachki.command.processor
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import ussr.party.kabachki.command.Command
 import ussr.party.kabachki.command.PingCommand
@@ -26,6 +25,5 @@ class CommandProcessorImpl(
 
     override suspend fun handle(event: ChatInputInteractionEvent) = withContext(dispatcher) {
         commandList.first { it.getName() == event.commandName }.executeCommand(event)
-        delay(1000)
     }
 }

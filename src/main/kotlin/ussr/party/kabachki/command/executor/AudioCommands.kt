@@ -1,6 +1,5 @@
 package ussr.party.kabachki.command.executor
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import discord4j.core.`object`.entity.channel.MessageChannel
 import discord4j.core.spec.EmbedCreateFields
 import ussr.party.kabachki.audio.PartyAudioManager
@@ -32,8 +31,7 @@ object AudioCommands {
         )
     }
 
-    fun List<AudioTrack>.toIndexedStringList() =
-        withIndex().joinToString("\n") { "${it.index + 1}. ${it.value.info.title}" }
+
 
     private fun Long.toHumanReadableLength(): String = run {
         listOf(this / 3600000, this / 60000 % 60, this / 1000 % 60)
