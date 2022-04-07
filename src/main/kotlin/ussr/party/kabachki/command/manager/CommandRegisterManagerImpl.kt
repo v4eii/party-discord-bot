@@ -24,8 +24,6 @@ class CommandRegisterManagerImpl(private val restClient: RestClient) : CommandRe
         } else if (fileCommands.isEmpty().not()) {
             registerCommands(requests = readFilesAndMapToCommandRequest(fileCommands))
         }
-
-        logger.info("No one command registered")
     }
 
     override fun deleteCommands(commands: List<ApplicationCommandRequest>) {
