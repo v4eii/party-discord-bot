@@ -17,7 +17,7 @@
 
         <dv8tion.version>5.0.0-alpha.5</dv8tion.version>
         <discord4j.version>3.2.2</discord4j.version>
-        <lavaplayer.version>youtube_details_parse_bug-SNAPSHOT</lavaplayer.version>
+        <lavaplayer.version>PR650-9af0c892ff-1</lavaplayer.version>
         <slf4j.version>1.7.36</slf4j.version>
     </properties>
 
@@ -60,7 +60,7 @@
             <version>${discord4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.idpromnut</groupId>
+            <groupId>com.github.sedmelluq</groupId>
             <artifactId>lavaplayer</artifactId>
             <version>${lavaplayer.version}</version>
         </dependency>
