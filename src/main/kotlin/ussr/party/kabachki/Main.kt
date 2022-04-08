@@ -4,11 +4,14 @@ import discord4j.core.DiscordClient
 import discord4j.core.GatewayDiscordClient
 import discord4j.core.`object`.entity.channel.TextChannel
 import discord4j.core.event.domain.Event
+import discord4j.core.event.domain.PresenceUpdateEvent
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import discord4j.core.event.domain.lifecycle.ReadyEvent
 import discord4j.core.event.domain.message.MessageCreateEvent
+import discord4j.gateway.intent.IntentSet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
+import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.mono
 import reactor.core.publisher.Mono
@@ -27,7 +30,7 @@ fun main(args: Array<String>) {
     configHolder["token"] = botToken
     configHolder["isDebug"] = isDebug
 
-    discordClient.withGateway { gateway ->
+    discordClient.gateway().setEnabledIntents(IntentSet.all()).withGateway { gateway ->
         val interactionMono = mono {
             gateway.on(ChatInputInteractionEvent::class.java)
                 .asFlow()
@@ -70,21 +73,36 @@ fun main(args: Array<String>) {
             }
         ).and(
             interactionMonoWithResume.onErrorResume { interactionMonoWithResume }
+        ).and(
+            mono {
+                gateway.on(PresenceUpdateEvent::class.java)
+                    .asFlow()
+                    .collect {
+                        launch {
+                            (it.guild.awaitFirst()
+                                .channels
+                                .filter { it.name == "spam-for-bot" }
+                                .awaitFirst() as TextChannel)
+                                .createMessage(
+                                    """
+                                        ${it.user.awaitFirst().username}
+                                         play in 
+                                         ${it.current.activity.orElse(null)?.name}
+                                    """
+                                )
+                                .awaitFirstOrNull()
+
+                            if (it.current.activities.any { it.name.contains("Dota", ignoreCase = true) })
+                                (it.guild.awaitFirst()
+                                    .channels
+                                    .filter { it.name == "gamesы" }
+                                    .awaitFirst() as TextChannel)
+                                    .createMessage("${it.user.awaitFirst().mention} пиздец чел, выйди из доты, пожалуйста, не позорься")
+                                    .awaitFirstOrNull()
+                        }
+                    } // TODO improve!!!!
+            }
         ).withDebug(gateway, isDebug)
-//            .and(
-//            mono {
-//                launch {
-//                    while (true) {
-//                        gateway.users.flatMap { it.asMember(Snowflake.of(937689943814328320)) }.flatMap { it.presence }.toStream().toList()
-//                        gateway.guilds.filter { it.name == "Party of Kabachki" }.flatMap { it.channels }.toStream().toList()
-//                        gateway.guilds
-//                            .filter { it.name == "Party of Kabachki" }
-//                            .flatMap { it.channels }
-//                        delay(100000)
-//                    }
-//                }
-//            }
-//        )
     }.block()
 }
 
