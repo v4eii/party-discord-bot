@@ -15,7 +15,7 @@ class MessageCreateEventProcessor : EventProcessor<MessageCreateEvent> {
         scope.launch {
             val content = event.message.content
             val badWordMessage = """Аниме для мужелюбов ¯\_(ツ)_/¯"""
-            if (content.isContainsBadWord() && content != badWordMessage)
+            if (content.isNotBlank() && content.isContainsBadWord() && content != badWordMessage)
                 event.sendSimpleMessage(badWordMessage)
         }
 
