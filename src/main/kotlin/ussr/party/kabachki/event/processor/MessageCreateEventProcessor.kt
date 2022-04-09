@@ -21,7 +21,8 @@ class MessageCreateEventProcessor : EventProcessor<MessageCreateEvent> {
 
     private fun String.isContainsBadWord(): Boolean =
         this.split(" ").any {
-            checkFirstBadWordLetter(it[0]) &&
+            it.length >= 5 &&
+                    checkFirstBadWordLetter(it[0]) &&
                     checkSecondBadWordLetter(it[1]) &&
                     checkThirdBadWordLetter(it[2]) &&
                     checkFourthBadWordLetter(it[3]) &&
