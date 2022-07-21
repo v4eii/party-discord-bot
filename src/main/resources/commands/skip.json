@@ -1,0 +1,12 @@
+{
+  "name": "skip",
+  "description": "Skip track",
+  "options": [
+    {
+      "name": "position",
+      "description": "skip current track and play selected",
+      "type": 4,
+      "required": false
+    }
+  ]
+}

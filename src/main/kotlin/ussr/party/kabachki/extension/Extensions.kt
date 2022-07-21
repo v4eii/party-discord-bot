@@ -1,34 +1,50 @@
 package ussr.party.kabachki.extension
 
+import discord4j.core.`object`.entity.Guild
 import discord4j.core.`object`.entity.Member
 import discord4j.core.`object`.entity.Message
 import discord4j.core.`object`.entity.channel.MessageChannel
+import discord4j.core.`object`.entity.channel.TextChannel
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import discord4j.core.event.domain.message.MessageCreateEvent
 import discord4j.core.spec.EmbedCreateFields
 import discord4j.core.spec.EmbedCreateSpec
 import discord4j.core.spec.VoiceChannelJoinSpec
 import discord4j.discordjson.possible.Possible
 import discord4j.voice.AudioProvider
+import kotlinx.coroutines.reactive.awaitFirst
+import kotlinx.coroutines.reactive.awaitFirstOrNull
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
 import ussr.party.kabachki.exception.MemberIsNotPresentException
+import ussr.party.kabachki.exception.MessageChannelNotFoundException
 import ussr.party.kabachki.exception.VoiceStateIsNotExistException
 import java.time.Duration
 import java.time.Instant
 
-// MessageCreateEvent
+suspend fun ChatInputInteractionEvent.getVoiceStateOrNull() = getMemberOrNull()?.getVoiceStateOrNull()
+suspend fun ChatInputInteractionEvent.getMessageChannelOrNull() = interaction.channel.awaitFirstOrNull()
+suspend fun ChatInputInteractionEvent.getMessageChannelOrThrow() =
+    getMessageChannelOrNull() ?: throw MessageChannelNotFoundException()
 
-fun MessageCreateEvent.getMemberOrNull(): Member? = member.orElse(null)
-fun MessageCreateEvent.getMemberOrThrow(): Member = getMemberOrNull() ?: throw MemberIsNotPresentException()
-fun MessageCreateEvent.getUsername() = getMemberOrNull()?.userData?.username() ?: "Cumrade"
-fun MessageCreateEvent.getMentionUsername() = getMemberOrNull()?.mention ?: "Cumrade"
-fun MessageCreateEvent.getContent() = message.content
+suspend fun ChatInputInteractionEvent.replyTo(content: String, ephemeral: Boolean = false) =
+    reply().withContent(content).withEphemeral(ephemeral).awaitFirstOrNull()
 
-suspend fun MessageCreateEvent.getVoiceStateOrNull() = getMemberOrNull()?.getVoiceStateOrNull()
+fun ChatInputInteractionEvent.getMemberOrNull(): Member? = interaction.member.orElse(null)
+fun ChatInputInteractionEvent.getMemberOrThrow(): Member = getMemberOrNull() ?: throw MemberIsNotPresentException()
+fun ChatInputInteractionEvent.getUsername() = getMemberOrNull()?.userData?.username() ?: "Cumrade"
+fun ChatInputInteractionEvent.getUserMention() = interaction.user.mention
 
-suspend fun MessageCreateEvent.joinToMemberVoiceChannelWithProvider(audioProvider: AudioProvider) {
+@SuppressWarnings
+fun ChatInputInteractionEvent.getOptionByNameOrNull(name: String): String? =
+    getOption(name).orElse(null)
+        ?.value
+        ?.orElse(null)
+        ?.raw
+
+suspend fun ChatInputInteractionEvent.joinToMemberVoiceChannelWithProvider(audioProvider: AudioProvider) {
     val logger = LoggerFactory.getLogger(this::class.java)
     val member = getMemberOrThrow()
     try {
@@ -46,9 +62,6 @@ suspend fun MessageCreateEvent.joinToMemberVoiceChannelWithProvider(audioProvide
     }
 }
 
-suspend fun MessageCreateEvent.sendSimpleMessage(msg: String): Message =
-    getMessageChannel().createMessage(msg).awaitSingle()
-
 suspend fun MessageCreateEvent.sendSimpleMessageWithDelayedAction(
     msg: String,
     duration: Duration,
@@ -62,7 +75,7 @@ suspend fun MessageCreateEvent.sendSimpleMessageWithDelayedAction(
 
 suspend fun MessageCreateEvent.getMessageChannel(): MessageChannel = message.channel.awaitSingle()
 
-suspend fun MessageCreateEvent.sendComplexMessage(
+suspend fun MessageChannel.sendComplexMessage(
     author: EmbedCreateFields.Author? = null,
     imageUrl: String,
     title: String,
@@ -71,7 +84,7 @@ suspend fun MessageCreateEvent.sendComplexMessage(
     additionalFields: Array<EmbedCreateFields.Field> = arrayOf(),
     footer: EmbedCreateFields.Footer? = null
 ) {
-    getMessageChannel().createMessage(
+    createMessage(
         EmbedCreateSpec.builder()
             .author(author)
             .title(title)
@@ -89,11 +102,13 @@ fun EmbedCreateSpec.Builder.urlOrNone(url: String?) = url?.let {
     url(url)
 } ?: this
 
-// Member
 
 suspend fun Member.getVoiceStateOrNull() = voiceState.awaitSingleOrNull()
-
 suspend fun Member.getVoiceStateOrThrow() = getVoiceStateOrNull() ?: throw VoiceStateIsNotExistException()
+
+@SuppressWarnings("unchecked")
+suspend fun <T> Guild.getChannel(name: String) = this.channels.filter { it.name == name }.awaitFirst() as T
+suspend fun TextChannel.sendSimpleMessage(text: String) = createMessage(text).awaitFirstOrNull()
 
 // Util
 
