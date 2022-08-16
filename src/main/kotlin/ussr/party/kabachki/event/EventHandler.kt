@@ -7,7 +7,7 @@ import kotlinx.coroutines.reactor.mono
 import ussr.party.kabachki.event.processor.EventProcessor
 
 object EventHandler {
-    inline fun <reified T : Event> collectEvent(gateway: GatewayDiscordClient, eventProcessor: EventProcessor<T>) =
+    inline fun <reified T : Event> collectEvents(gateway: GatewayDiscordClient, eventProcessor: EventProcessor<T>) =
         mono {
             gateway.on(T::class.java)
                 .asFlow()

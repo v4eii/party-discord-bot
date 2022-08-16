@@ -5,9 +5,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ussr.party.kabachki.command.Command
-import ussr.party.kabachki.command.PingCommand
-import ussr.party.kabachki.command.SecretCommand
 import ussr.party.kabachki.command.executor.AudioCommands
+import ussr.party.kabachki.command.impl.MoveCumradeCommand
+import ussr.party.kabachki.command.impl.PingCommand
+import ussr.party.kabachki.command.impl.SecretCommand
 
 class CommandProcessorImpl(
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default
@@ -16,11 +17,12 @@ class CommandProcessorImpl(
         listOf(
             PingCommand(),
             SecretCommand(),
+            MoveCumradeCommand(),
             AudioCommands.playCommand,
             AudioCommands.skipCommand,
             AudioCommands.pauseCommand,
             AudioCommands.resumeCommand,
-            AudioCommands.listCommand
+            AudioCommands.listCommand,
         )
 
     override suspend fun handle(event: ChatInputInteractionEvent) = withContext(dispatcher) {

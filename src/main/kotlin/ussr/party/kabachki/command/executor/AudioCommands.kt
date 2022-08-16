@@ -3,7 +3,7 @@ package ussr.party.kabachki.command.executor
 import discord4j.core.`object`.entity.channel.MessageChannel
 import discord4j.core.spec.EmbedCreateFields
 import ussr.party.kabachki.audio.PartyAudioManager
-import ussr.party.kabachki.command.*
+import ussr.party.kabachki.command.impl.*
 import ussr.party.kabachki.extension.sendComplexMessage
 
 object AudioCommands {

@@ -33,9 +33,9 @@ fun main(args: Array<String>) {
 
     discordClient.gateway().setEnabledIntents(IntentSet.all()).withGateway { gateway ->
         val readyEventPublisher = EventHandler.collectOneEvent(gateway, readyEventProcessor)
-        val interactionEventPublisher = EventHandler.collectEvent(gateway, slashCommandProcessor)
-        val messageCreateEventPublisher = EventHandler.collectEvent(gateway, messageCreateEventProcessor)
-        val presenceUpdateEventPublisher = EventHandler.collectEvent(gateway, presenceUpdateEventProcessor)
+        val interactionEventPublisher = EventHandler.collectEvents(gateway, slashCommandProcessor)
+        val messageCreateEventPublisher = EventHandler.collectEvents(gateway, messageCreateEventProcessor)
+        val presenceUpdateEventPublisher = EventHandler.collectEvents(gateway, presenceUpdateEventProcessor)
 
         val interactionEventWithResumePublisher = interactionEventPublisher.onErrorResume { interactionEventPublisher }
 
@@ -49,7 +49,8 @@ fun main(args: Array<String>) {
                         "play.json",
                         "resume.json",
                         "secret.json",
-                        "skip.json"
+                        "skip.json",
+                        "move-cumrade.json"
                     )
                 )
         }
