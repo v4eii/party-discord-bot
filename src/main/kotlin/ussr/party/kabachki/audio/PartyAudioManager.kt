@@ -28,8 +28,8 @@ class PartyAudioManager {
         }
     }
 
-    fun resumeTrack(): Boolean {
-        return if (player.playingTrack == null) {
+    fun resumeTrack(): Boolean =
+        if (player.playingTrack == null) {
             false
         } else if (player.isPaused) {
             revertPauseFlag()
@@ -37,10 +37,9 @@ class PartyAudioManager {
         } else {
             true
         }
-    }
 
-    fun stopTrack(): Boolean {
-        return if (player.playingTrack == null) {
+    fun stopTrack(): Boolean =
+        if (player.playingTrack == null) {
             false
         } else if (player.isPaused.not()) {
             revertPauseFlag()
@@ -48,7 +47,7 @@ class PartyAudioManager {
         } else {
             true
         }
-    }
+
 
     private fun revertPauseFlag() {
         player.isPaused = !player.isPaused

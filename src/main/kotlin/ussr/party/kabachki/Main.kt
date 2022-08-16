@@ -2,7 +2,10 @@ package ussr.party.kabachki
 
 import discord4j.core.DiscordClient
 import discord4j.core.GatewayDiscordClient
+import discord4j.core.`object`.command.ApplicationCommandOption
 import discord4j.core.event.domain.Event
+import discord4j.discordjson.json.ApplicationCommandOptionData
+import discord4j.discordjson.json.ApplicationCommandRequest
 import discord4j.gateway.intent.IntentSet
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactor.mono
@@ -33,9 +36,9 @@ fun main(args: Array<String>) {
 
     discordClient.gateway().setEnabledIntents(IntentSet.all()).withGateway { gateway ->
         val readyEventPublisher = EventHandler.collectOneEvent(gateway, readyEventProcessor)
-        val interactionEventPublisher = EventHandler.collectEvent(gateway, slashCommandProcessor)
-        val messageCreateEventPublisher = EventHandler.collectEvent(gateway, messageCreateEventProcessor)
-        val presenceUpdateEventPublisher = EventHandler.collectEvent(gateway, presenceUpdateEventProcessor)
+        val interactionEventPublisher = EventHandler.collectEvents(gateway, slashCommandProcessor)
+        val messageCreateEventPublisher = EventHandler.collectEvents(gateway, messageCreateEventProcessor)
+        val presenceUpdateEventPublisher = EventHandler.collectEvents(gateway, presenceUpdateEventProcessor)
 
         val interactionEventWithResumePublisher = interactionEventPublisher.onErrorResume { interactionEventPublisher }
 
@@ -50,6 +53,23 @@ fun main(args: Array<String>) {
                         "resume.json",
                         "secret.json",
                         "skip.json"
+                    )
+                )
+            CommandRegisterManagerImpl(gateway.restClient)
+                .registerCommands(
+                    requests = listOf(
+                        ApplicationCommandRequest.builder()
+                            .name("move-cumrade")
+                            .description("Move users to voice channel")
+                            .addOption(
+                                ApplicationCommandOptionData.builder()
+                                    .name("destination")
+                                    .description("destination channel")
+                                    .type(ApplicationCommandOption.Type.CHANNEL.value)
+                                    .required(true)
+                                    .build()
+                            )
+                            .build()
                     )
                 )
         }
