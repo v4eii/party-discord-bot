@@ -20,6 +20,7 @@ class MoveCumradeCommand : Command {
                     .asFlow()
                     .collect {
                         it.edit().withNewVoiceChannel(destination.id.toOptional().toPossible()).awaitFirstOrNull()
+                        replyTo("Cumrades! Welcume to ${destination.mention}")
                     }
             } else {
                 replyTo("You are not Developer!", true)
