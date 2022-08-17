@@ -48,7 +48,8 @@ class PresenceUpdateEventProcessor : EventProcessor<PresenceUpdateEvent> {
                             "https://tenor.com/view/yakuza-gif-19282842"
                         )
                     }
-                    currentPresence.containsActivity("Tower of Fantasy") || currentPresence.containsActivity("Genshin") -> {
+                    currentPresence.containsActivity("Genshin") ||
+                            (currentPresence.containsActivity("Tower of Fantasy") && oldPresence.notContainsActivity("Tower of Fantasy")) -> {
                         responseChannel.sendSimpleMessage(
                             """${event.getUserMention()} немезида не кантрица, еб#нные донатеры!!
                                 |вопрос: как и почему враги меня бьют и почему не умирают?
