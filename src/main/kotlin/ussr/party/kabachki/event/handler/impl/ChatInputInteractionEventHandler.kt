@@ -1,13 +1,28 @@
 package ussr.party.kabachki.event.handler.impl
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
-import ussr.party.kabachki.command.processor.CommandProcessorImpl
+import ussr.party.kabachki.command.Command
+import ussr.party.kabachki.command.helper.AudioHelper
+import ussr.party.kabachki.command.impl.MoveCumradeCommand
+import ussr.party.kabachki.command.impl.PingCommand
+import ussr.party.kabachki.command.impl.SecretCommand
 import ussr.party.kabachki.event.handler.EventHandler
 
-class ChatInputInteractionEventHandler(
-    private val commandProcessorImpl: CommandProcessorImpl
-) : EventHandler<ChatInputInteractionEvent> {
+class ChatInputInteractionEventHandler : EventHandler<ChatInputInteractionEvent> {
+
+    private val commandList: List<Command> =
+        listOf(
+            PingCommand(),
+            SecretCommand(),
+            MoveCumradeCommand(),
+            AudioHelper.playCommand,
+            AudioHelper.skipCommand,
+            AudioHelper.pauseCommand,
+            AudioHelper.resumeCommand,
+            AudioHelper.listCommand,
+        )
+
     override suspend fun handle(event: ChatInputInteractionEvent) {
-        commandProcessorImpl.handle(event)
+        commandList.first { it.getName() == event.commandName }.executeCommand(event)
     }
 }

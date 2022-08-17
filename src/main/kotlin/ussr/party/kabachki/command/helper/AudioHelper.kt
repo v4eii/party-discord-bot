@@ -1,4 +1,4 @@
-package ussr.party.kabachki.command.executor
+package ussr.party.kabachki.command.helper
 
 import discord4j.core.`object`.entity.channel.MessageChannel
 import discord4j.core.spec.EmbedCreateFields
@@ -6,7 +6,7 @@ import ussr.party.kabachki.audio.PartyAudioManager
 import ussr.party.kabachki.command.impl.*
 import ussr.party.kabachki.extension.sendComplexMessage
 
-object AudioCommands {
+object AudioHelper {
     private val partyAudioManager = PartyAudioManager()
 
     val playCommand = PlayCommand(partyAudioManager)
@@ -30,8 +30,6 @@ object AudioCommands {
             )
         )
     }
-
-
 
     private fun Long.toHumanReadableLength(): String = run {
         listOf(this / 3600000, this / 60000 % 60, this / 1000 % 60)

@@ -8,7 +8,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactor.mono
 import reactor.core.publisher.Mono
 import ussr.party.kabachki.command.manager.CommandRegisterManagerImpl
-import ussr.party.kabachki.command.processor.CommandProcessorImpl
 import ussr.party.kabachki.event.EventCollector
 import ussr.party.kabachki.event.handler.impl.*
 import ussr.party.kabachki.exception.LaunchException
@@ -23,7 +22,7 @@ fun main(args: Array<String>) {
     configHolder["token"] = botToken
     configHolder["isDebug"] = isDebug
 
-    val slashCommandHandler = ChatInputInteractionEventHandler(CommandProcessorImpl())
+    val slashCommandHandler = ChatInputInteractionEventHandler()
     val readyEventHandler = ReadyEventHandler()
     val messageCreateEventHandler = MessageCreateEventHandler()
     val presenceUpdateEventHandler = PresenceUpdateEventHandler()
@@ -64,7 +63,7 @@ fun main(args: Array<String>) {
 
 fun Mono<*>.withDebug(gateway: GatewayDiscordClient, isDebug: Boolean) =
     if (isDebug) {
-        this.and(gateway.on(Event::class.java) {
+        and(gateway.on(Event::class.java) {
             mono {
                 launch {
                     println(it)

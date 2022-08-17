@@ -3,7 +3,7 @@ package ussr.party.kabachki.command.impl
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import ussr.party.kabachki.audio.PartyAudioManager
 import ussr.party.kabachki.command.Command
-import ussr.party.kabachki.command.executor.AudioCommands.sendComplexMessageWithPlayedTrack
+import ussr.party.kabachki.command.helper.AudioHelper.sendComplexMessageWithPlayedTrack
 import ussr.party.kabachki.extension.*
 
 class PlayCommand(private val partyAudioManager: PartyAudioManager) : Command {
