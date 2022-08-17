@@ -1,23 +1,21 @@
-package ussr.party.kabachki.event.processor
+package ussr.party.kabachki.event.handler.impl
 
 import discord4j.core.`object`.entity.Member
 import discord4j.core.`object`.entity.Message
 import discord4j.core.event.domain.message.MessageCreateEvent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactor.awaitSingle
+import ussr.party.kabachki.event.handler.EventHandler
 import ussr.party.kabachki.exception.MemberIsNotPresentException
 import ussr.party.kabachki.extension.getMessageChannel
 
-class MessageCreateEventProcessor : EventProcessor<MessageCreateEvent> {
+class MessageCreateEventHandler : EventHandler<MessageCreateEvent> {
 
-    override fun process(event: MessageCreateEvent, scope: CoroutineScope) =
-        scope.launch {
-            val content = event.message.content
-            val badWordMessage = """Аниме для мужелюбов ¯\_(ツ)_/¯"""
-            if (content.isNotBlank() && content.isContainsBadWord() && content != badWordMessage)
-                event.sendSimpleMessage(badWordMessage)
-        }
+    override suspend fun handle(event: MessageCreateEvent) {
+        val content = event.message.content
+        val badWordMessage = """Аниме для мужелюбов ¯\_(ツ)_/¯"""
+        if (content.isNotBlank() && content.isContainsBadWord() && content != badWordMessage)
+            event.sendSimpleMessage(badWordMessage)
+    }
 
     private fun String.isContainsBadWord(): Boolean =
         this.split(" ").any {
