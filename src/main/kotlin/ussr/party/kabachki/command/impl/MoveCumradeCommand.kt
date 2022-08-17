@@ -17,7 +17,7 @@ class MoveCumradeCommand : Command {
                 members.filter {
                     voiceChannel.isMemberConnected(it.id).awaitFirst()
                 }.forEach {
-                    it.edit().withNewVoiceChannel(destination.id.toOptional().toPossible()).subscribe().also { println(321) }
+                    it.edit().withNewVoiceChannel(destination.id.toOptional().toPossible()).subscribe()
                 }
                 replyTo("Cumrades! Welcume to ${destination.mention}")
             } else {

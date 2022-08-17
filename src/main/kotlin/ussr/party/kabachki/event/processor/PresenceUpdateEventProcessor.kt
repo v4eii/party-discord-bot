@@ -73,6 +73,8 @@ class PresenceUpdateEventProcessor : EventProcessor<PresenceUpdateEvent> {
                     }
                     currentPresence.containsActivity("Elden Ring") ->
                         responseChannel.sendSimpleMessage("${event.getUserMention()} а может не надо?")
+                    currentPresence.containsActivity("Warframe") ->
+                        responseChannel.sendSimpleMessage("${event.getUserMention()} здесь мог быть наш кибербуллинг, на всякий фу")
                 }
             }
         }
