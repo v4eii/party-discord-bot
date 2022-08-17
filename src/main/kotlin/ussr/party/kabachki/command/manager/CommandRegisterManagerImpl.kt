@@ -36,10 +36,8 @@ class CommandRegisterManagerImpl(private val restClient: RestClient) : CommandRe
             val appId = restClient.applicationId.block() ?: throw RegisterCommandException("appId is null")
             val applicationService = restClient.applicationService
 
-            val commandsNameToDelete = commands.map { it.name() }
-
             applicationService.getGlobalApplicationCommands(appId)
-                .filter { existsCommand -> commandsNameToDelete.contains(existsCommand.name()) }
+                .filter { existsCommand -> existsCommand.name() in commands.map { it.name() } }
                 .map { applicationService.deleteGlobalApplicationCommand(appId, it.id().toLong()) }
                 .doOnComplete { logger.info("Commands deleted") }
                 .subscribe()
