@@ -11,7 +11,7 @@ import ussr.party.kabachki.extension.sendSimpleMessage
 class VoiceStateUpdateEventHandler : EventHandler<VoiceStateUpdateEvent> {
     override suspend fun handle(event: VoiceStateUpdateEvent) {
         val currentChannelId = event.current.data.channelId().orElse(Id.of(0)).asString()
-        if (currentChannelId == "992829909976227953") {
+        if (currentChannelId == "992829909976227953" && (event.isJoinEvent || event.isMoveEvent)) {
             val mention = event.current.member.awaitFirst().mention
             val textChannel = event.current
                 .guild
