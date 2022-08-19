@@ -54,16 +54,15 @@ class WeatherCommand : Command {
                     Wind speed: **${parsedResponse.wind?.speed.valueOrAbsent()} m/s**
                     Cloudiness: **${parsedResponse.clouds?.all.valueOrAbsent()}%**
                     Visibility: **${parsedResponse.visibility} m**
-                    Sunset: ${Instant.ofEpochSecond(parsedResponse.sys?.sunset?.toLong() ?: 0)}
-                    Sunrise: ${Instant.ofEpochSecond(parsedResponse.sys?.sunrise?.toLong() ?: 0)}
+                    Sunset: **${Instant.ofEpochSecond((parsedResponse.sys?.sunset?.toLong() ?: 0)+ parsedResponse.timezone)}** (Instant, with timezone)
+                    Sunrise: **${Instant.ofEpochSecond((parsedResponse.sys?.sunrise?.toLong() ?: 0) + parsedResponse.timezone)}** (Instant, with timezone)
                     
                     Processing date is 
                     **${parsedResponse.dt}** (Unix date-time, UTC)
                     **${Instant.ofEpochSecond(parsedResponse.dt.toLong())}** (Instant, UTC)
-                    **${Instant.ofEpochSecond(parsedResponse.dt.toLong() + parsedResponse.timezone)}** (Instant, Location)
+                    **${Instant.ofEpochSecond(parsedResponse.dt.toLong() + parsedResponse.timezone)}** (Instant, with timezone)
                     """.trimIndent()
-                else
-                    ""
+                else ""
             )
         }
     }
