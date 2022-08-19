@@ -6,6 +6,7 @@ import ussr.party.kabachki.command.helper.AudioHelper
 import ussr.party.kabachki.command.impl.MoveCumradeCommand
 import ussr.party.kabachki.command.impl.PingCommand
 import ussr.party.kabachki.command.impl.SecretCommand
+import ussr.party.kabachki.command.impl.WeatherCommand
 import ussr.party.kabachki.event.handler.EventHandler
 
 class ChatInputInteractionEventHandler : EventHandler<ChatInputInteractionEvent> {
@@ -15,6 +16,7 @@ class ChatInputInteractionEventHandler : EventHandler<ChatInputInteractionEvent>
             PingCommand(),
             SecretCommand(),
             MoveCumradeCommand(),
+            WeatherCommand(),
             AudioHelper.playCommand,
             AudioHelper.skipCommand,
             AudioHelper.pauseCommand,
