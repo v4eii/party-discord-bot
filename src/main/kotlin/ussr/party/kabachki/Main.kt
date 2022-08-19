@@ -48,7 +48,8 @@ fun main(args: Array<String>) {
                         "resume.json",
                         "secret.json",
                         "skip.json",
-                        "move-cumrade.json"
+                        "move-cumrade.json",
+                        "weather.json"
                     )
                 )
         }

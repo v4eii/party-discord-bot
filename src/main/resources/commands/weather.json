@@ -1,0 +1,12 @@
+{
+  "name": "weather",
+  "description": "Show weather data",
+  "options": [
+    {
+      "name": "full",
+      "description": "Return full weather info",
+      "type": 5,
+      "required": false
+    }
+  ]
+}
