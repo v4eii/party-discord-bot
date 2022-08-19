@@ -38,7 +38,7 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
                          """.trimMargin()
                     )
                 }
-                currentPresence.containsActivity("Path of Exile") -> {
+                currentPresence.containsActivity("Path of Exile", oldPresence) -> {
                     responseChannel.sendSimpleMessage(
                         "${event.getUserMention()} happy inventory management!"
                     )
@@ -46,8 +46,8 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
                         "https://tenor.com/view/yakuza-gif-19282842"
                     )
                 }
-                currentPresence.containsActivity("Genshin") ||
-                        (currentPresence.containsActivity("Tower of Fantasy") && oldPresence.notContainsActivity("Tower of Fantasy")) -> {
+                currentPresence.containsActivity("Genshin", oldPresence) ||
+                        currentPresence.containsActivity("Tower of Fantasy", oldPresence) -> {
                     responseChannel.sendSimpleMessage(
                         """${event.getUserMention()} немезида не кантрица, еб#нные донатеры!!
                                 |вопрос: как и почему враги меня бьют и почему не умирают?
@@ -60,18 +60,18 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
                         "https://tenor.com/view/kiryu-slapping-yakuza-haruka-gif-16227101"
                     )
                 }
-                currentPresence.containsActivity("Yakuza") ->
+                currentPresence.containsActivity("Yakuza", oldPresence) ->
                     responseChannel.sendSimpleMessage(
                         "https://tenor.com/view/%D0%BA%D0%B0%D0%B2%D1%83%D0%BD-%D0%B0%D1%80%D0%B1%D1%83%D0%B7-%D0%B1%D0%B0%D0%B7%D0%B0-gif-25186538"
                     )
-                currentPresence.containsActivity("Batman") -> {
+                currentPresence.containsActivity("Batman", oldPresence) -> {
                     responseChannel.sendSimpleMessage(
                         "${event.getUserMention()} так мы убьем бэтмена или как?"
                     )
                 }
-                currentPresence.containsActivity("Elden Ring") ->
+                currentPresence.containsActivity("Elden Ring", oldPresence) ->
                     responseChannel.sendSimpleMessage("${event.getUserMention()} а может не надо?")
-                currentPresence.containsActivity("Warframe") ->
+                currentPresence.containsActivity("Warframe", oldPresence) ->
                     responseChannel.sendSimpleMessage("${event.getUserMention()} здесь мог быть наш кибербуллинг, на всякий фу")
             }
         }
@@ -83,7 +83,9 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
     private fun PresenceUpdateEvent.getPresence(isOld: Boolean = false) =
         if (isOld) this.old.orElse(null) else this.current
 
-    private fun Presence.containsActivity(name: String) = activities.any { it.name.contains(name, ignoreCase = true) }
+    private fun Presence.containsActivity(name: String, oldActivity: Presence? = null) =
+        activities.any { it.name.contains(name, ignoreCase = true) } && (oldActivity?.notContainsActivity(name) ?: true)
+
     private fun Presence.notContainsActivity(name: String) =
         activities.none { it.name.contains(name, ignoreCase = true) }
 }
