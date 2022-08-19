@@ -54,6 +54,8 @@ class WeatherCommand : Command {
                     Wind speed: **${parsedResponse.wind?.speed.valueOrAbsent()} m/s**
                     Cloudiness: **${parsedResponse.clouds?.all.valueOrAbsent()}%**
                     Visibility: **${parsedResponse.visibility} m**
+                    Sunset: ${Instant.ofEpochSecond(parsedResponse.sys?.sunset?.toLong() ?: 0)}
+                    Sunrise: ${Instant.ofEpochSecond(parsedResponse.sys?.sunrise?.toLong() ?: 0)}
                     
                     Processing date is 
                     **${parsedResponse.dt}** (Unix date-time, UTC)
