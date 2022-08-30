@@ -1,5 +1,7 @@
 package ussr.party.kabachki.extension
 
+import discord4j.core.`object`.VoiceState
+import discord4j.core.`object`.command.ApplicationCommandInteractionOptionValue
 import discord4j.core.`object`.entity.Guild
 import discord4j.core.`object`.entity.Member
 import discord4j.core.`object`.entity.Message
@@ -18,12 +20,15 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.slf4j.LoggerFactory
 import reactor.core.publisher.Mono
-import ussr.party.kabachki.exception.MemberIsNotPresentException
-import ussr.party.kabachki.exception.MessageChannelNotFoundException
-import ussr.party.kabachki.exception.VoiceStateIsNotExistException
+import ussr.party.kabachki.exception.*
 import java.time.Duration
 import java.time.Instant
+import java.util.*
 
+fun ChatInputInteractionEvent.getMemberOrNull(): Member? = interaction.member.orElse(null)
+fun ChatInputInteractionEvent.getMemberOrThrow(): Member = getMemberOrNull() ?: throw MemberIsNotPresentException()
+fun ChatInputInteractionEvent.getUsername() = getMemberOrNull()?.userData?.username() ?: "Cumrade"
+fun ChatInputInteractionEvent.getUserMention() = interaction.user.mention
 suspend fun ChatInputInteractionEvent.getVoiceStateOrNull() = getMemberOrNull()?.getVoiceStateOrNull()
 suspend fun ChatInputInteractionEvent.getMessageChannelOrNull() = interaction.channel.awaitFirstOrNull()
 suspend fun ChatInputInteractionEvent.getMessageChannelOrThrow() =
@@ -32,23 +37,35 @@ suspend fun ChatInputInteractionEvent.getMessageChannelOrThrow() =
 suspend fun ChatInputInteractionEvent.replyTo(content: String, ephemeral: Boolean = false) =
     reply().withContent(content).withEphemeral(ephemeral).awaitFirstOrNull()
 
-fun ChatInputInteractionEvent.getMemberOrNull(): Member? = interaction.member.orElse(null)
-fun ChatInputInteractionEvent.getMemberOrThrow(): Member = getMemberOrNull() ?: throw MemberIsNotPresentException()
-fun ChatInputInteractionEvent.getUsername() = getMemberOrNull()?.userData?.username() ?: "Cumrade"
-fun ChatInputInteractionEvent.getUserMention() = interaction.user.mention
+suspend fun ChatInputInteractionEvent.getGuildOrNull() = getMemberOrThrow().guild.awaitFirstOrNull()
+suspend fun ChatInputInteractionEvent.getGuildOrThrow() =
+    getGuildOrNull() ?: throw DiscordElementNotExistException("guild not found")
+
+suspend fun Member.getVoiceStateOrNull() = voiceState.awaitSingleOrNull()
+suspend fun Member.getVoiceStateOrThrow() = getVoiceStateOrNull() ?: throw VoiceStateIsNotExistException()
+suspend fun VoiceState.getVoiceChannelOrNull() = channel.awaitSingleOrNull()
+suspend fun VoiceState.getVoiceChannelOrThrow() = getVoiceChannelOrNull() ?: throw VoiceChannelIsNotExistException()
+suspend fun MessageCreateEvent.getMessageChannel(): MessageChannel = message.channel.awaitSingle()
+
+suspend fun ChatInputInteractionEvent.isDeveloper() =
+    getMemberOrThrow().roles
+        .any { it.name == "Developer" }
+        .awaitFirstOrNull() ?: false
 
 @SuppressWarnings
-fun ChatInputInteractionEvent.getOptionByNameOrNull(name: String): String? =
+fun ChatInputInteractionEvent.getOptionByNameOrNull(name: String): ApplicationCommandInteractionOptionValue? =
     getOption(name).orElse(null)
         ?.value
         ?.orElse(null)
-        ?.raw
+
+@SuppressWarnings
+fun ChatInputInteractionEvent.getOptionByNameOrThrow(name: String) =
+    getOptionByNameOrNull(name) ?: throw OptionNotFoundException("$name not found")
 
 suspend fun ChatInputInteractionEvent.joinToMemberVoiceChannelWithProvider(audioProvider: AudioProvider) {
     val logger = LoggerFactory.getLogger(this::class.java)
-    val member = getMemberOrThrow()
     try {
-        member.getVoiceStateOrThrow()
+        getMemberOrThrow().getVoiceStateOrThrow()
             .channel
             .flatMap { channel ->
                 channel.join(
@@ -73,8 +90,6 @@ suspend fun MessageCreateEvent.sendSimpleMessageWithDelayedAction(
         .awaitSingleOrNull()
 }
 
-suspend fun MessageCreateEvent.getMessageChannel(): MessageChannel = message.channel.awaitSingle()
-
 suspend fun MessageChannel.sendComplexMessage(
     author: EmbedCreateFields.Author? = null,
     imageUrl: String,
@@ -98,27 +113,11 @@ suspend fun MessageChannel.sendComplexMessage(
     ).awaitSingleOrNull()
 }
 
-fun EmbedCreateSpec.Builder.urlOrNone(url: String?) = url?.let {
-    url(url)
-} ?: this
+fun EmbedCreateSpec.Builder.urlOrNone(url: String?) = url?.let { url(url) } ?: this
 
-
-suspend fun Member.getVoiceStateOrNull() = voiceState.awaitSingleOrNull()
-suspend fun Member.getVoiceStateOrThrow() = getVoiceStateOrNull() ?: throw VoiceStateIsNotExistException()
-
-@SuppressWarnings("unchecked")
+@Suppress("UNCHECKED_CAST")
 suspend fun <T> Guild.getChannel(name: String) = this.channels.filter { it.name == name }.awaitFirst() as T
 suspend fun TextChannel.sendSimpleMessage(text: String) = createMessage(text).awaitFirstOrNull()
 
-// Util
-
-fun List<String>.checkValidUrl(): Boolean {
-    val urlRegex =
-        "https?://(www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)".toRegex()
-    for (it in this) {
-        return urlRegex.containsMatchIn(it)
-    }
-    return false
-}
-
 fun <T> T.toPossible() = Possible.of(this!!)
+fun <T> T?.toOptional() = Optional.ofNullable(this)

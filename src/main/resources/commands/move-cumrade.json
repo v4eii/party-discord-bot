@@ -1,0 +1,12 @@
+{
+  "name": "move-cumrade",
+  "description": "Move users to voice channel",
+  "options": [
+    {
+      "name": "destination",
+      "description": "destination channel",
+      "type": 7,
+      "required": true
+    }
+  ]
+}

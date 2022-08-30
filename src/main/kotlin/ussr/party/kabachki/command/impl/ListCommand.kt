@@ -1,8 +1,9 @@
-package ussr.party.kabachki.command
+package ussr.party.kabachki.command.impl
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import ussr.party.kabachki.audio.PartyAudioManager
+import ussr.party.kabachki.command.Command
 import ussr.party.kabachki.extension.replyTo
 
 class ListCommand(private val partyAudioManager: PartyAudioManager) : Command {

@@ -17,10 +17,15 @@ class CommandRegisterManagerImpl(private val restClient: RestClient) : CommandRe
         if (requests.isEmpty().not()) {
             val appId = restClient.applicationId.block() ?: throw RegisterCommandException("appId is null")
             val applicationService = restClient.applicationService
+            val existedCommands = applicationService.getGlobalApplicationCommands(appId).collectList().block()
+                ?: emptyList()
 
-            applicationService.bulkOverwriteGlobalApplicationCommand(appId, requests)
-                .doOnNext { cmd -> logger.info("Command '${cmd.name()}' successfully registered") }
-                .subscribe()
+            requests.filter { it.name() !in existedCommands.map { request -> request.name() } }
+                .forEach {
+                    applicationService.createGlobalApplicationCommand(appId, it)
+                        .doOnNext { cmd -> logger.info("Command '${cmd.name()}' successfully registered") }
+                        .subscribe()
+                }
         } else if (fileCommands.isEmpty().not()) {
             registerCommands(requests = readFilesAndMapToCommandRequest(fileCommands))
         }
@@ -31,10 +36,8 @@ class CommandRegisterManagerImpl(private val restClient: RestClient) : CommandRe
             val appId = restClient.applicationId.block() ?: throw RegisterCommandException("appId is null")
             val applicationService = restClient.applicationService
 
-            val commandsNameToDelete = commands.map { it.name() }
-
             applicationService.getGlobalApplicationCommands(appId)
-                .filter { existsCommand -> commandsNameToDelete.contains(existsCommand.name()) }
+                .filter { existsCommand -> existsCommand.name() in commands.map { it.name() } }
                 .map { applicationService.deleteGlobalApplicationCommand(appId, it.id().toLong()) }
                 .doOnComplete { logger.info("Commands deleted") }
                 .subscribe()
