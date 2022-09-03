@@ -12,67 +12,101 @@ import ussr.party.kabachki.extension.sendSimpleMessage
 
 class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
+    private val gamesReactMap = listOf(
+        Triple(
+            first = "Dota",
+            second = """%s пиздец чел
+               | выйди из доты, пожалуйста, не позорься, это хуже чем аниме
+               | А как мы знаем:
+            """.trimMargin(),
+            third = ""
+        ),
+        Triple(
+            first = "Path of Exile",
+            second = "%s happy inventory management!",
+            third = "https://tenor.com/view/yakuza-gif-19282842"
+        ),
+        Triple(
+            first = "Genshin",
+            second = "%s давай давай собирай свои амонгусы",
+            third = "https://tenor.com/view/kiryu-slapping-yakuza-haruka-gif-16227101"
+        ),
+        Triple(
+            first = "Tower of Fantasy",
+            second = """%s немезида не кантрица, еб#нные донатеры!!
+                |вопрос: как и почему враги меня бьют и почему не умирают?
+                |на ответ пойдешь нахуй гандон
+            """.trimMargin(),
+            third = "https://tenor.com/view/kiryu-slapping-yakuza-haruka-gif-16227101"
+        ),
+        Triple(
+            first = "Yakuza",
+            second = "",
+            third = "https://tenor.com/view/%D0%BA%D0%B0%D0%B2%D1%83%D0%BD-%D0%B0%D1%80%D0%B1%D1%83%D0%B7-%D0%B1%D0%B0%D0%B7%D0%B0-gif-25186538"
+        ),
+        Triple(
+            first = "Batman",
+            second = "%s так мы убьем бэтмена или как?",
+            third = ""
+        ),
+        Triple(
+            first = "Elden Ring",
+            second = "%s а может не надо?",
+            third = ""
+        ),
+        Triple(
+            first = "Warframe",
+            second = "%s здесь мог быть наш кибербуллинг, на всякий фу",
+            third = ""
+        ),
+        Triple(
+            first = "Kerbal",
+            second = """%s так падажжи ебана, суда пару движков, суда воздухозаборников
+               |смысле 1.2 маха не выжмем? да ща все 1.5 будут на
+               |а чо смысле на Луну? ну давай тогда декуплеров херачь да побольше! 
+            """.trimMargin(),
+            third = "https://tenor.com/view/science-kerbal-xacktar-gif-20679215"
+        ),
+        Triple(
+            first = "Spotify",
+            second = "",
+            third = "https://tenor.com/view/ddd-gif-22697176"
+        )
+    )
 
     override suspend fun handle(event: PresenceUpdateEvent) {
-        val oldPresence = event.getPresence(isOld = true)
-        val currentPresence = event.getPresence()
-        logger.info(
-            """
-                    ${event.getUsername()}
+        event.run {
+            val currentPresence = getPresence()
+            val oldPresence = getPresence(isOld = true)
+            logger.info(
+                """
+                    ${getUsername()}
                     oldActivity: ${oldPresence.activities}
                     oldStatus: ${oldPresence.status}
                     newActivity: ${currentPresence.activities}
                     newStatus: ${currentPresence.status}
+                    
                 """.trimIndent()
-        )
+            )
+            reactToChangePresence(
+                currentPresence = currentPresence,
+                oldPresence = oldPresence,
+                responseChannel = getEventGuild().getChannel("gamesы")
+            )
+        }
+    }
 
-        val responseChannel = event.getEventGuild().getChannel<TextChannel>("gamesы")
-
+    private suspend fun PresenceUpdateEvent.reactToChangePresence(
+        currentPresence: Presence,
+        oldPresence: Presence,
+        responseChannel: TextChannel
+    ) {
         if (oldPresence.notContainsActivity("Spotify")) { // because spotify trigger change presence every track
-            when {
-                currentPresence.containsActivity("Dota") -> {
-                    responseChannel.sendSimpleMessage(
-                        """${event.getUserMention()} пиздец чел
-                            | выйди из доты, пожалуйста, не позорься, это хуже чем аниме
-                            | А как мы знаем:
-                         """.trimMargin()
-                    )
+            gamesReactMap.forEach { (gameName, text, gifUrl) ->
+                if (currentPresence.containsActivity(gameName, oldPresence)) {
+                    if (text.isNotBlank()) responseChannel.sendSimpleMessage(text.format(getUserMention()))
+                    if (gifUrl.isNotBlank()) responseChannel.sendSimpleMessage(gifUrl)
                 }
-                currentPresence.containsActivity("Path of Exile", oldPresence) -> {
-                    responseChannel.sendSimpleMessage(
-                        "${event.getUserMention()} happy inventory management!"
-                    )
-                    responseChannel.sendSimpleMessage(
-                        "https://tenor.com/view/yakuza-gif-19282842"
-                    )
-                }
-                currentPresence.containsActivity("Genshin", oldPresence) ||
-                        currentPresence.containsActivity("Tower of Fantasy", oldPresence) -> {
-                    responseChannel.sendSimpleMessage(
-                        """${event.getUserMention()} немезида не кантрица, еб#нные донатеры!!
-                                |вопрос: как и почему враги меня бьют и почему не умирают?
-                                |на ответ пойдешь нахуй гандон
-                                |
-                                |или не то? ну тогда амонгусов иди собери
-                            """.trimMargin()
-                    )
-                    responseChannel.sendSimpleMessage(
-                        "https://tenor.com/view/kiryu-slapping-yakuza-haruka-gif-16227101"
-                    )
-                }
-                currentPresence.containsActivity("Yakuza", oldPresence) ->
-                    responseChannel.sendSimpleMessage(
-                        "https://tenor.com/view/%D0%BA%D0%B0%D0%B2%D1%83%D0%BD-%D0%B0%D1%80%D0%B1%D1%83%D0%B7-%D0%B1%D0%B0%D0%B7%D0%B0-gif-25186538"
-                    )
-                currentPresence.containsActivity("Batman", oldPresence) -> {
-                    responseChannel.sendSimpleMessage(
-                        "${event.getUserMention()} так мы убьем бэтмена или как?"
-                    )
-                }
-                currentPresence.containsActivity("Elden Ring", oldPresence) ->
-                    responseChannel.sendSimpleMessage("${event.getUserMention()} а может не надо?")
-                currentPresence.containsActivity("Warframe", oldPresence) ->
-                    responseChannel.sendSimpleMessage("${event.getUserMention()} здесь мог быть наш кибербуллинг, на всякий фу")
             }
         }
     }
