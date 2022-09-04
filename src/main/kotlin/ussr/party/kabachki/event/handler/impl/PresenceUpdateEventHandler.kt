@@ -71,6 +71,16 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
             first = "Spotify",
             second = "%s",
             third = "https://tenor.com/view/ddd-gif-22697176"
+        ),
+        Triple(
+            first = "Gunfire",
+            second = "%s фурри в бой!",
+            third = "https://media.discordapp.net/attachments/960928970629582918/1015667188998357112/unknown.png"
+        ),
+        Triple(
+            first = "Forza",
+            second = "%s дергаешь руль влево - поворачиваешь направо",
+            third = ""
         )
     )
 
