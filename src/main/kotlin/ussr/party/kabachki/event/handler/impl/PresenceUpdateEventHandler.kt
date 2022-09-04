@@ -67,11 +67,11 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
             """.trimMargin(),
             third = "https://tenor.com/view/science-kerbal-xacktar-gif-20679215"
         ),
-        Triple(
-            first = "Spotify",
-            second = "%s",
-            third = "https://tenor.com/view/ddd-gif-22697176"
-        ),
+//        Triple(
+//            first = "Spotify",
+//            second = "%s",
+//            third = "https://tenor.com/view/ddd-gif-22697176"
+//        ),
         Triple(
             first = "Gunfire",
             second = "%s фурри в бой!",
