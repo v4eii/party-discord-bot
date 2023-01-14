@@ -1,7 +1,7 @@
 FROM maven:3.6.0-jdk-11-slim AS build
 COPY src /home/app/src
 COPY pom.xml /home/app
-RUN mvn clean package /home/app/pom.xml
+RUN mvn -f clean package /home/app/pom.xml
 
 
 FROM openjdk:11-jre-slim
