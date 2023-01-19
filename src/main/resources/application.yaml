@@ -1,0 +1,11 @@
+client:
+  vk:
+    base-url: ${VK_BOT_CLIENT_BASE_URL:http://faradayqp.pythonanywhere.com}
+  weather:
+    base-url: ${WEATHER_BASE_URL:https://api.openweathermap.org}
+    api-key: ${WEATHER_API_KEY:508dff1acdabb7268e658e51914a2567}
+bot:
+  token: ${BOT_TOKEN}
+logging:
+  level:
+    ussr: ${LOGGING_LEVEL:DEBUG}
