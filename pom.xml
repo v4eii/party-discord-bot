@@ -107,7 +107,6 @@
             <artifactId>jackson-module-kotlin</artifactId>
         </dependency>
 
-
     </dependencies>
 
     <build>
