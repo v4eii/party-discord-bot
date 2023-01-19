@@ -15,3 +15,16 @@ data class ParseImageTagsResponse @JsonCreator constructor(
     @JsonProperty("is_sin")
     var isSin: Boolean
 )
+
+data class SendMessageRequest @JsonCreator constructor(
+    @JsonProperty("message_text")
+    var messageText: String,
+    @JsonProperty("user_id")
+    var userId: Long,
+    @JsonProperty("chat_id")
+    var chatId: Long?,
+    @JsonProperty("from_chat")
+    var fromChat: Boolean,
+    @JsonProperty("tag_id")
+    var tagId: Boolean
+)

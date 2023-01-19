@@ -22,8 +22,13 @@ class MessageCreateEventHandler(
         event.run {
             if (isContainsImage()) {
                 val imageTags = vkBotClient.getImageTags(getImages())
-                if (imageTags.isSin || imageTags.tags.any { it.isContainsBadWord() })
+                if (imageTags.isSin || imageTags.tags.any { it.isContainsBadWord() }) {
                     sendSimpleMessage(badWordMessage)
+                    vkBotClient.sendMessageToVk(
+                        messageText = badWordMessage,
+                        tagId = true
+                    )
+                }
             } else {
                 val content = message.content
                 if (content.isNotBlank() && content.isContainsBadWord() && content != badWordMessage)
