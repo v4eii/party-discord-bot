@@ -1,6 +1,5 @@
 package ussr.party.kabachki.client
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactive.awaitFirstOrNull
 import org.springframework.http.MediaType
@@ -22,11 +21,11 @@ class VkBotClient(
         "m" to "187127322"
     )
 
-    suspend fun getImageTags(imageUrl: String): ParseImageTagsResponse = webClient.post()
+    suspend fun getImageTags(imageUrls: List<String>): ParseImageTagsResponse = webClient.post()
         .uri("/api/v1/parse_image_tags")
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
-        .bodyValue(ParseImageTagsRequest(imageUrl = imageUrl).also { println(ObjectMapper().writeValueAsString(it)) })
+        .bodyValue(ParseImageTagsRequest(imageUrls = imageUrls))
         .retrieve()
         .bodyToMono<ParseImageTagsResponse>()
         .awaitFirst()

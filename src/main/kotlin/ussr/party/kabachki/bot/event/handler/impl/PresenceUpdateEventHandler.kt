@@ -93,8 +93,8 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
             logger.info(
                 """
                     ${getUsername()}
-                    oldActivity: ${oldPresence.activities}
-                    oldStatus: ${oldPresence.status}
+                    oldActivity: ${oldPresence?.activities}
+                    oldStatus: ${oldPresence?.status}
                     newActivity: ${currentPresence.activities}
                     newStatus: ${currentPresence.status}
                     
