@@ -1,22 +1,21 @@
 package ussr.party.kabachki.dto
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class ParseImageTagsRequest @JsonCreator constructor(
-    @JsonProperty("image_url")
-    var imageUrl: String
+data class ParseImageTagsRequest(
+    @JsonProperty("image_urls")
+    var imageUrls: List<String>
 )
 
-data class ParseImageTagsResponse @JsonCreator constructor(
-    @JsonProperty("image_url")
-    var imageUrl: String,
-    var tags: List<String> = emptyList(),
+data class ParseImageTagsResponse(
+    @JsonProperty("image_urls")
+    var imageUrl: List<String>,
+    var tags: List<List<String>> = emptyList(),
     @JsonProperty("is_sin")
     var isSin: Boolean
 )
 
-data class SendMessageRequest @JsonCreator constructor(
+data class SendMessageRequest(
     @JsonProperty("message_text")
     var messageText: String,
     @JsonProperty("user_id")

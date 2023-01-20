@@ -59,7 +59,7 @@ class BotInitializer(
                     .and(EventCollector.collectEvents(gateway, presenceUpdateEventHandler))
                     .and(EventCollector.collectEvents(gateway, voiceStateUpdateEventHandler))
                     .withDebug(gateway)
-            }.subscribe()
+            }.block()
     }
 
     fun Mono<*>.withDebug(gateway: GatewayDiscordClient) =
