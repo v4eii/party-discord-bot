@@ -3,8 +3,10 @@ package ussr.party.kabachki.bot
 import discord4j.core.DiscordClient
 import discord4j.core.GatewayDiscordClient
 import discord4j.core.event.domain.Event
+import discord4j.gateway.ShardInfo
 import discord4j.gateway.intent.IntentSet
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.Logger
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -15,6 +17,7 @@ import reactor.core.publisher.Mono
 import ussr.party.kabachki.bot.command.manager.CommandRegisterManagerImpl
 import ussr.party.kabachki.bot.event.EventCollector
 import ussr.party.kabachki.bot.event.handler.impl.*
+import ussr.party.kabachki.config.bot.BotElements
 import ussr.party.kabachki.config.bot.BotProperties
 import ussr.party.kabachki.extension.getLogger
 
@@ -27,6 +30,8 @@ class BotInitializer(
     private val messageCreateEventHandler: MessageCreateEventHandler,
     private val presenceUpdateEventHandler: PresenceUpdateEventHandler,
     private val voiceStateUpdateEventHandler: VoiceStateUpdateEventHandler,
+    private val sendMessageEventHandler: SendMessageEventHandler,
+    private val botElements: BotElements
 ) {
     val logger: Logger = getLogger<BotInitializer>()
 
@@ -53,11 +58,24 @@ class BotInitializer(
                             )
                         )
                 }
+                    .and(
+                        mono {
+                            botElements.apply {
+                                shardInfo = ShardInfo.create(
+                                    gateway.gatewayClientGroup.computeShardIndex(gateway.guilds.awaitFirst().id),
+                                    gateway.gatewayClientGroup.shardCount
+                                )
+                                gatewayDiscordClient = gateway
+                            }
+
+                        }
+                    )
                     .and(EventCollector.collectOneEvent(gateway, readyEventHandler))
                     .and(EventCollector.collectEvents(gateway, messageCreateEventHandler))
                     .and(EventCollector.collectEvents(gateway, chatInputInteractionEventHandler))
                     .and(EventCollector.collectEvents(gateway, presenceUpdateEventHandler))
                     .and(EventCollector.collectEvents(gateway, voiceStateUpdateEventHandler))
+                    .and(EventCollector.collectEvents(gateway, sendMessageEventHandler))
                     .withDebug(gateway)
             }.block()
     }
