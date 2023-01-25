@@ -32,7 +32,7 @@ class MessageCreateEventHandler(
                 }
             } else {
                 val content = message.content
-                if (content.isNotBlank() && content.isContainsBadWord() && content != badWordMessage)
+                if (content.isNotBlank() && content.isContainsBadWord() && !content.contains(badWordMessage))
                     sendSimpleMessage(badWordMessage)
             }
         }
