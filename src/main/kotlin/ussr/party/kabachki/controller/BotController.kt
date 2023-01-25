@@ -19,7 +19,7 @@ class BotController(
                     SendMessageEvent(
                         botElements.gatewayDiscordClient,
                         botElements.shardInfo,
-                        channelMessageDTO.content
+                        channelMessageDTO
                     )
                 )
         }

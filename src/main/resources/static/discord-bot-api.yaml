@@ -45,5 +45,13 @@ components:
         content:
           type: string
           description: Message content
+        partySystem:
+          type: string
+          description: system name
+          enum:
+            - vk
+        userSystemId:
+          type: string
+          description: user system id
       required:
         - content

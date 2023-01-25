@@ -10,6 +10,6 @@ class SendMessageEventHandler(
     private val messagePublisherService: MessagePublisherService
 ) : EventHandler<SendMessageEvent> {
     override suspend fun handle(event: SendMessageEvent) {
-        messagePublisherService.publishMessage(event.content)
+        messagePublisherService.publishMessage(event.messageDTO)
     }
 }
