@@ -1,30 +1,26 @@
 package ussr.party.kabachki.controller
 
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import ussr.party.kabachki.api.V1Api
 import ussr.party.kabachki.bot.event.SendMessageEvent
 import ussr.party.kabachki.config.bot.BotElements
+import ussr.party.kabachki.model.ChannelMessageDTO
 
 @RestController
 class BotController(
     private val botElements: BotElements
-) {
-    @PostMapping("/api/v1/send-message")
-    suspend fun sendMessage(@RequestBody sendMessageDTO: SendMessageDTO) {
-        botElements.gatewayDiscordClient
-            .eventDispatcher
-            .publish(
-                SendMessageEvent(
-                    botElements.gatewayDiscordClient,
-                    botElements.shardInfo,
-                    sendMessageDTO.content
+) : V1Api {
+    override fun sendDiscordMessage(channelMessageDTO: ChannelMessageDTO): ResponseEntity<Unit> =
+        ResponseEntity.noContent().build<Unit>().also {
+            botElements.gatewayDiscordClient
+                .eventDispatcher
+                .publish(
+                    SendMessageEvent(
+                        botElements.gatewayDiscordClient,
+                        botElements.shardInfo,
+                        channelMessageDTO.content
+                    )
                 )
-            )
-    }
-
+        }
 }
-
-data class SendMessageDTO(
-    val content: String
-)

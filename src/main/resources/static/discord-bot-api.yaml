@@ -1,0 +1,49 @@
+openapi: 3.0.0
+info:
+  title: party-discord-bot
+  version: '1.0'
+servers:
+  - url: 'http://{host}:{port}'
+    variables:
+      host:
+        default: localhost
+      port:
+        default: '8080'
+      contextPath:
+        default: engine-rest
+  - url: 'http://{host}'
+    variables:
+      host:
+        default: localhost
+paths:
+  /api/v1/bot/message:
+    parameters: []
+    post:
+      summary: Send message
+      operationId: sendDiscordMessage
+      responses:
+        '204':
+          description: No Content
+        '500':
+          description: Internal Server Error
+      description: Send message to guild info channel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChannelMessageDTO'
+      tags:
+        - V1
+components:
+  schemas:
+    ChannelMessageDTO:
+      type: object
+      title: ChannelMessageDTO
+      description: message dto
+      properties:
+        content:
+          type: string
+          description: Message content
+      required:
+        - content

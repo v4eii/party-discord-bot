@@ -10,7 +10,7 @@ class MessagePublisherService(
     private val botElements: BotElements
 ) {
     //    Snowflake{937689943814328320} guild id
-//    Snowflake{937785108696551546} channelId
+    //    Snowflake{937785108696551546} channelId
     suspend fun publishMessage(message: String) {
         botElements.gatewayDiscordClient
             .rest()
