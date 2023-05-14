@@ -1,5 +1,6 @@
 package ussr.party.kabachki.bot
 
+import discord4j.common.retry.ReconnectOptions
 import discord4j.core.DiscordClient
 import discord4j.core.GatewayDiscordClient
 import discord4j.core.event.domain.Event
@@ -20,6 +21,7 @@ import ussr.party.kabachki.bot.event.handler.impl.*
 import ussr.party.kabachki.config.bot.BotElements
 import ussr.party.kabachki.config.bot.BotProperties
 import ussr.party.kabachki.extension.getLogger
+import java.time.Duration
 
 @Component
 @EnableConfigurationProperties(BotProperties::class)
@@ -41,6 +43,13 @@ class BotInitializer(
             .build()
             .gateway()
             .setEnabledIntents(IntentSet.all())
+            .setReconnectOptions(
+                ReconnectOptions.builder()
+                    .setFirstBackoff(Duration.ZERO)
+                    .setMaxBackoffInterval(Duration.ofSeconds(15L))
+                    .setMaxRetries(Long.MAX_VALUE)
+                    .build()
+            )
             .withGateway { gateway ->
                 mono {
                     CommandRegisterManagerImpl(gateway.restClient)
