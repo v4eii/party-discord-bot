@@ -17,7 +17,12 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import ussr.party.kabachki.bot.command.manager.CommandRegisterManagerImpl
 import ussr.party.kabachki.bot.event.EventCollector
-import ussr.party.kabachki.bot.event.handler.impl.*
+import ussr.party.kabachki.bot.event.handler.impl.ChatInputInteractionEventHandler
+import ussr.party.kabachki.bot.event.handler.impl.MessageCreateEventHandler
+import ussr.party.kabachki.bot.event.handler.impl.PresenceUpdateEventHandler
+import ussr.party.kabachki.bot.event.handler.impl.ReadyEventHandler
+import ussr.party.kabachki.bot.event.handler.impl.SendMessageEventHandler
+import ussr.party.kabachki.bot.event.handler.impl.VoiceStateUpdateEventHandler
 import ussr.party.kabachki.config.bot.BotElements
 import ussr.party.kabachki.config.bot.BotProperties
 import ussr.party.kabachki.extension.getLogger
@@ -45,7 +50,7 @@ class BotInitializer(
             .setEnabledIntents(IntentSet.all())
             .setReconnectOptions(
                 ReconnectOptions.builder()
-                    .setFirstBackoff(Duration.ZERO)
+                    .setFirstBackoff(Duration.ofSeconds(2))
                     .setMaxBackoffInterval(Duration.ofSeconds(15L))
                     .setMaxRetries(Long.MAX_VALUE)
                     .build()
