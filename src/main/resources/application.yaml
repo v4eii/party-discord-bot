@@ -9,3 +9,17 @@ bot:
 logging:
   level:
     ussr: ${LOGGING_LEVEL:DEBUG}
+users:
+  identificators:
+    Filipp:
+      discord: 292615364448223233
+      vk: 216144521
+    Pavel:
+      discord: 333567900373745664
+      vk: 203664038
+    Maxim:
+      discord: 358590015531646977
+      vk: 187127322
+    Slava:
+      discord: 359310537521102858
+      vk: 121788102

@@ -38,7 +38,7 @@ class CommandRegisterManagerImpl(private val restClient: RestClient) : CommandRe
 
             applicationService.getGlobalApplicationCommands(appId)
                 .filter { existsCommand -> existsCommand.name() in commands.map { it.name() } }
-                .map { applicationService.deleteGlobalApplicationCommand(appId, it.id().toLong()) }
+                .map { applicationService.deleteGlobalApplicationCommand(appId, it.id().asLong()) }
                 .doOnComplete { logger.info("Commands deleted") }
                 .subscribe()
         }
