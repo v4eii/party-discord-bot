@@ -27,7 +27,7 @@
         <open-api-plugin-generator.version>6.2.1</open-api-plugin-generator.version>
 
         <dv8tion.version>5.0.0-alpha.5</dv8tion.version>
-        <discord4j.version>3.2.2</discord4j.version>
+        <discord4j.version>3.2.4</discord4j.version>
         <lavaplayer.version>PR650-9af0c892ff-1</lavaplayer.version>
         <slf4j.version>1.7.36</slf4j.version>
     </properties>

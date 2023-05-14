@@ -37,6 +37,17 @@ paths:
         - V1
 components:
   schemas:
+    BaseErrorDTO:
+      type: object
+      title: BaseErrorDTO
+      description: base error
+      properties:
+        errorCode:
+          type: string
+          description: custom error code
+        errorMessage:
+          type: string
+          description: error descriptiob
     ChannelMessageDTO:
       type: object
       title: ChannelMessageDTO
