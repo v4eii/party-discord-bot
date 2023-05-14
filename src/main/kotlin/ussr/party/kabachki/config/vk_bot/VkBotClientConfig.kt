@@ -5,12 +5,14 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.WebClient
 import ussr.party.kabachki.client.VkBotClient
+import ussr.party.kabachki.config.UserDataProperties
 import ussr.party.kabachki.extension.getLogger
 
 @Configuration
 @EnableConfigurationProperties(VkBotClientProperties::class)
 class VkBotClientConfig(
-    private val vkBotClientProperties: VkBotClientProperties
+    private val vkBotClientProperties: VkBotClientProperties,
+    private val userDataProperties: UserDataProperties
 ) {
 
     val logger = getLogger<VkBotClientConfig>()
@@ -26,7 +28,8 @@ class VkBotClientConfig(
                     logger.info("Body: ${request.body()}")
                     next.exchange(request)
                 }
-                .build()
+                .build(),
+            userDataProperties = userDataProperties
         )
     }
 
