@@ -2,6 +2,7 @@ package ussr.party.kabachki.bot.event.handler.impl
 
 import discord4j.core.`object`.entity.channel.TextChannel
 import discord4j.core.`object`.presence.Presence
+import discord4j.core.`object`.presence.Status
 import discord4j.core.event.domain.PresenceUpdateEvent
 import kotlinx.coroutines.reactive.awaitFirst
 import org.slf4j.Logger
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component
 import ussr.party.kabachki.bot.event.handler.EventHandler
 import ussr.party.kabachki.bot.extension.getChannel
 import ussr.party.kabachki.bot.extension.sendSimpleMessage
+import java.time.LocalTime
 
 @Component
 class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
@@ -103,7 +105,8 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
             reactToChangePresence(
                 currentPresence = currentPresence,
                 oldPresence = oldPresence,
-                responseChannel = getEventGuild().getChannel("gamesы")
+                responseChannel = getEventGuild().getChannel("gamesы"),
+                event = this
             )
         }
     }
@@ -111,16 +114,34 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
     private suspend fun PresenceUpdateEvent.reactToChangePresence(
         currentPresence: Presence,
         oldPresence: Presence,
-        responseChannel: TextChannel
+        responseChannel: TextChannel,
+        event: PresenceUpdateEvent
     ) {
         if (oldPresence.notContainsActivity("Spotify")) { // because spotify trigger change presence every track
-            gamesReactMap.forEach { (gameName, text, gifUrl) ->
-                if (currentPresence.containsActivity(gameName, oldPresence)) {
+            gamesReactMap.find { currentPresence.containsActivity(it.first, oldPresence) }
+                ?.let { (_, text, gifUrl) ->
                     if (text.isNotBlank()) responseChannel.sendSimpleMessage(text.format(getUserMention()))
                     if (gifUrl.isNotBlank()) responseChannel.sendSimpleMessage(gifUrl)
                 }
-            }
         }
+        if (currentPresence.isJustEnter(oldPresence) && isWorkTime()) {
+            responseChannel.sendSimpleMessage("${event.getUserMention()} Иди работай блин, а не в игрушки играй")
+        }
+        if (currentPresence.status == Status.INVISIBLE) {
+            responseChannel.sendSimpleMessage(
+                """${event.getUserMention()} Мужик, харе бояться всего и всех, 
+                    | "Окружающие боятся тебя больше, чем ты их" (c) Максим
+                    | выходи давай из инвиза""".trimMargin()
+            )
+        }
+    }
+
+    private suspend fun isWorkTime(): Boolean {
+        val now = LocalTime.now()
+        val startWordDay = LocalTime.of(9, 0)
+        val endWorkDay = LocalTime.of(18, 0)
+
+        return now.isAfter(startWordDay) && now.isBefore(endWorkDay)
     }
 
     private suspend fun PresenceUpdateEvent.getEventGuild() = this.guild.awaitFirst()
@@ -134,4 +155,6 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
 
     private fun Presence.notContainsActivity(name: String) =
         activities.none { it.name.contains(name, ignoreCase = true) }
+    private suspend fun Presence.isJustEnter(oldPresence: Presence) = oldPresence.status == Status.OFFLINE && this.status == Status.ONLINE
+
 }
