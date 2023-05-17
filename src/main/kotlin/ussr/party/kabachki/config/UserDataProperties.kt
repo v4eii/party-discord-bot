@@ -17,5 +17,5 @@ data class UserDataProperties(
         id: String,
         systemFrom: PartySystem = PartySystem.VK,
         systemTo: PartySystem = PartySystem.DISCORD
-    ): String = identificators.map { it.value }.find { it[systemFrom] == id }!![systemTo] ?: throw RuntimeException()
+    ): String = identificators.values.find { it[systemFrom] == id }!![systemTo] ?: throw RuntimeException()
 }
