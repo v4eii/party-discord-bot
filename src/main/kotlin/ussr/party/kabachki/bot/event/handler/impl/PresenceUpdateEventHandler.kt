@@ -11,7 +11,11 @@ import org.springframework.stereotype.Component
 import ussr.party.kabachki.bot.event.handler.EventHandler
 import ussr.party.kabachki.bot.extension.getChannel
 import ussr.party.kabachki.bot.extension.sendSimpleMessage
+import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalTime
+import java.time.OffsetTime
+import java.time.ZoneOffset
 
 @Component
 class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
@@ -137,11 +141,19 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
     }
 
     private suspend fun isWorkTime(): Boolean {
-        val now = LocalTime.now()
-        val startWordDay = LocalTime.of(9, 0)
-        val endWorkDay = LocalTime.of(18, 0)
+        val offset = ZoneOffset.of("GMT+3")
+        val now = OffsetTime.now(offset)
+        val startWordDay = OffsetTime.of(LocalTime.of(9, 0), offset)
+        val endWorkDay = OffsetTime.of(LocalTime.of(18, 0), offset)
+        val workDays = setOf(
+            DayOfWeek.MONDAY,
+            DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY,
+            DayOfWeek.FRIDAY,
+        )
 
-        return now.isAfter(startWordDay) && now.isBefore(endWorkDay)
+        return now.isAfter(startWordDay) && now.isBefore(endWorkDay) && LocalDate.now().dayOfWeek in workDays
     }
 
     private suspend fun PresenceUpdateEvent.getEventGuild() = this.guild.awaitFirst()
