@@ -13,7 +13,7 @@ class BaseScheduler(
     private val botElements: BotElements
 ) {
 
-    @Scheduled(cron = "* * * * * TUE")
+    @Scheduled(cron = "0 0 9 * * TUE")
     fun furryScheduler() {
         botElements.run {
             gatewayDiscordClient
