@@ -128,9 +128,9 @@ class PresenceUpdateEventHandler : EventHandler<PresenceUpdateEvent> {
                     if (gifUrl.isNotBlank()) responseChannel.sendSimpleMessage(gifUrl)
                 }
         }
-        if (currentPresence.isJustEnter(oldPresence) && isWorkTime()) {
-            responseChannel.sendSimpleMessage("${event.getUserMention()} Иди работай блин, а не в игрушки играй")
-        }
+//        if (currentPresence.isJustEnter(oldPresence) && isWorkTime()) {
+//            responseChannel.sendSimpleMessage("${event.getUserMention()} Иди работай блин, а не в игрушки играй")
+//        }
         if (currentPresence.status == Status.INVISIBLE) {
             responseChannel.sendSimpleMessage(
                 """${event.getUserMention()} Мужик, харе бояться всего и всех, 
